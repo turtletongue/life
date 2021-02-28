@@ -14,7 +14,7 @@ const createCells = (): number[][] => {
   return temp;
 }
 
-const generateNewGeneration = (cellsState: number[][], setIsStopped: Function, id: NodeJS.Timeout) => {
+const generateNewGeneration = (cellsState: number[][], setIsStopped: Function) => {
   const newCellsState: number[][] = cellsState.map(
     (row: number[], rowIndex: number) => row.map((cell: number, columnIndex: number) => {
       let livingCells: number = 0;
@@ -34,7 +34,6 @@ const generateNewGeneration = (cellsState: number[][], setIsStopped: Function, i
     })
   );
   if (JSON.stringify(cellsState) === JSON.stringify(newCellsState)) {
-    clearInterval(id);
     setIsStopped(true);
   }
   return newCellsState;
@@ -42,21 +41,33 @@ const generateNewGeneration = (cellsState: number[][], setIsStopped: Function, i
 
 let intervalId: NodeJS.Timeout;
 
+const startGenerationInterval = (setCellsState: Function, setIsStopped: Function) => {
+  setIsStopped(false);
+  intervalId = setInterval(
+    () => {
+      setCellsState((oldCellsState: number[][]) => generateNewGeneration(oldCellsState, setIsStopped));
+    },
+    2000
+  );
+}
+
 const App = () => {
   const [cellsState, setCellsState] = useState(createCells());
   const [isStopped, setIsStopped] = useState(false);
   useEffect(() => {
-    intervalId = setInterval(
-      () => {
-        setCellsState(oldCellsState => generateNewGeneration(oldCellsState, setIsStopped, intervalId));
-      },
-      5000
-    );
+    startGenerationInterval(setCellsState, setIsStopped);
     return () => clearInterval(intervalId);
   }, []);
+  if (isStopped) {
+    clearInterval(intervalId);
+  }
   return (
     <>
-      <Menu />
+      <Menu
+        isStopped={isStopped}
+        start={() => startGenerationInterval(setCellsState, setIsStopped)}
+        stop={() => setIsStopped(true)}
+      />
       <Universe cells={cellsState} />
     </>
   );
