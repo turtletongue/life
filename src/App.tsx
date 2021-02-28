@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import Universe from './components/universe/universe.component';
+import { useState, useEffect } from 'react';
 import { ROWS, COLUMNS } from './constants';
+import Menu from './components/menu/menu.component';
+import Universe from './components/universe/universe.component';
 
 const createCells = (): number[][] => {
   const temp: any = [];
@@ -34,19 +35,30 @@ const generateNewGeneration = (cellsState: number[][], setIsStopped: Function, i
   );
   if (JSON.stringify(cellsState) === JSON.stringify(newCellsState)) {
     clearInterval(id);
+    setIsStopped(true);
   }
   return newCellsState;
 }
 
+let intervalId: NodeJS.Timeout;
+
 const App = () => {
   const [cellsState, setCellsState] = useState(createCells());
   const [isStopped, setIsStopped] = useState(false);
-  const intervalId: NodeJS.Timeout = setInterval(
-    () => setCellsState(generateNewGeneration(cellsState, setIsStopped, intervalId)),
-    5000
-  );
+  useEffect(() => {
+    intervalId = setInterval(
+      () => {
+        setCellsState(oldCellsState => generateNewGeneration(oldCellsState, setIsStopped, intervalId));
+      },
+      5000
+    );
+    return () => clearInterval(intervalId);
+  }, []);
   return (
-    <Universe cells={cellsState} />
+    <>
+      <Menu />
+      <Universe cells={cellsState} />
+    </>
   );
 }
 
