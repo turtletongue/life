@@ -51,6 +51,13 @@ const startGenerationInterval = (setCellsState: Function, setIsStopped: Function
   );
 }
 
+const toggleCellState = (rowIndex: number, columnIndex: number, setCellState: Function) => {
+  setCellState((cellsState: number[][]) => cellsState.map(
+    (row: number[], rIndex: number) => row.map((cell: number, cIndex: number) => {
+      return rowIndex === rIndex && columnIndex === cIndex ? !cell : cell;
+    })));
+} 
+
 const App = () => {
   const [cellsState, setCellsState] = useState(createCells());
   const [isStopped, setIsStopped] = useState(false);
@@ -68,7 +75,12 @@ const App = () => {
         start={() => startGenerationInterval(setCellsState, setIsStopped)}
         stop={() => setIsStopped(true)}
       />
-      <Universe cells={cellsState} />
+      <Universe
+        cells={cellsState}
+        toggleCellState={
+          (rowIndex: number, columnIndex: number) => toggleCellState(rowIndex, columnIndex, setCellsState)
+        }
+      />
     </>
   );
 }

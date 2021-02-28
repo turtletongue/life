@@ -2,10 +2,11 @@ import { Center, SimpleGrid } from '@chakra-ui/react';
 import { ROWS, COLUMNS } from '../../constants';
 
 interface UniverseProps {
-  cells: number[][]
+  cells: number[][],
+  toggleCellState: Function
 }
 
-const Universe = ({ cells }: UniverseProps) => {
+const Universe = ({ cells, toggleCellState }: UniverseProps) => {
   return (
     <Center
       w="100vw"
@@ -16,14 +17,19 @@ const Universe = ({ cells }: UniverseProps) => {
         rows={ROWS}
       >
         {
-          cells.map((row: number[]) => row.map((cell: number, index: number) => {
+          cells.map((row: number[], rowIndex: number) => row.map((cell: number, columnIndex: number) => {
             return (
               <Center
-                key={index}
+                key={columnIndex}
                 bgColor={ cell ? "blue.600" : "black" }
-                color="white"
                 h={5}
                 w={5}
+                sx={{
+                  '&:hover': {
+                    bgColor: "white"
+                  }
+                }}
+                onClick={() => toggleCellState(rowIndex, columnIndex)}
               ></Center>
             );
           }))
