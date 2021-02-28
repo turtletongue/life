@@ -1,7 +1,8 @@
 import { Center, SimpleGrid } from '@chakra-ui/react';
+import { ROWS, COLUMNS } from '../../constants';
 
 interface UniverseProps {
-  cells: [number[]]
+  cells: number[][]
 }
 
 const Universe = ({ cells }: UniverseProps) => {
@@ -11,15 +12,15 @@ const Universe = ({ cells }: UniverseProps) => {
       h="100vh"
     >
       <SimpleGrid
-        columns={55}
-        rows={30}
+        columns={COLUMNS}
+        rows={ROWS}
       >
         {
           cells.map((row: number[]) => row.map((cell: number, index: number) => {
             return (
               <Center
                 key={index}
-                bgColor={ cell ? "tomato" : "white" }
+                bgColor={ cell ? "blue.600" : "black" }
                 color="white"
                 h={5}
                 w={5}
